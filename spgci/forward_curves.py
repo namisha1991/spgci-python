@@ -246,7 +246,7 @@ class ForwardCurves:
     def get_history_assessments(
         self,
         *,
-        curve_code: Optional[Union["list[str]", "Series[str]", str]] = None,
+        curve_code: Optional[str] = None,
         derivative_maturity_frequency: Optional[
             Union["list[str]", "list[MatFrequency]", "Series[str]", str, MatFrequency]
         ] = None,
@@ -269,8 +269,8 @@ class ForwardCurves:
 
         Parameters
         ----------
-        curve_code : Optional[Union[list[str], Series[str], str]], optional
-            fitler by curve code, by default None
+        curve_code : Optional[str], optional
+            single curve code, by default None
         derivative_maturity_frequency : Optional[ Union[list[str], list[MatFrequency], Series[str], str, MatFrequency] ], optional
             fitler by maturity frequency, by default None
         derivative_position : Optional[Union[list[int], Series[int], int]], optional
@@ -310,16 +310,20 @@ class ForwardCurves:
         >>> ci.ForwardCurves().get_history_assessments(curve_code="CN003")
 
         **Get Monthly Contracts**
-        >>> ci.ForwardCurves().get_history_assessments(curve_code=["CN003"], derivative_maturity_frequency="Month")
+        >>> ci.ForwardCurves().get_history_assessments(curve_code="CN003", derivative_maturity_frequency="Month")
 
         **Get Assessments for a Curve on a particular date**
-        >>> ci.ForwardCurves().get_history_assessments(curve_code=["CN003"], assess_date=date(2023,2,13))
+        >>> ci.ForwardCurves().get_history_assessments(curve_code="CN003", assess_date=date(2023,2,13))
         """
-        if curve_code is not None and isinstance(curve_code, (list, tuple, Series)):
-            if len(curve_code) > 1:
-                raise InvalidCurveCodeError( "Only 1 curve_code is accepted." )
-            if len(curve_code) == 1:
-                curve_code = curve_code.iloc[0] if isinstance(curve_code, Series) else curve_code[0]
+        if curve_code is not None:
+            if isinstance(curve_code, (list, tuple, Series)):
+                raise InvalidCurveCodeError(
+                    "Only 1 curve_code is accepted. Use a single string value, not a list."
+                ) from None
+            if not isinstance(curve_code, str):
+                raise InvalidCurveCodeError(
+                    "curve_code must be a single string."
+                ) from None
 
         endpoint_path = "history/curve-codes"
 
