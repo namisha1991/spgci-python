@@ -365,9 +365,8 @@ class ForwardCurves:
             path=f"{self._path}{endpoint_path}",
             params=params,
             raw=raw,
-            paginate=paginate,
-            df_fn=self._convert_to_df,
-            paginate_fn=self._paginate,
+            paginate=False,
+            df_fn=self._convert_to_df
         )
 
         return response
